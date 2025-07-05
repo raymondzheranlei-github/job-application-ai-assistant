@@ -1,0 +1,32 @@
+project:
+  name: mcp-accenture             # The name of the project/package
+  version: 0.1.0                   # Current version of the project
+  description: MCP Accenture Project  # Brief description
+  requires-python: ">=3.10"    # Minimum supported Python version
+  dependencies:                   # List of runtime dependencies
+    - fastapi
+    - uvicorn
+    - python-dotenv
+    - fastapi-mcp
+    - sqlalchemy
+    - PyMuPDF
+    - python-docx
+    - openai
+    - resend
+    - python-multipart
+    - numpy
+
+build-system:
+  requires:                       # Build-time dependencies
+    - hatchling                   # Hatchling as the PEP 517 backend
+  build-backend: hatchling.build  # Entry point for Hatchling
+
+tool:
+  hatch:
+    metadata:
+      allow-direct-references: true  # Allow direct version references
+    build:
+      targets:
+        wheel:
+          packages:
+            - mcp_accenture       # Package(s) included in the wheel artifact
