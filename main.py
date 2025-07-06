@@ -65,8 +65,8 @@ def extract_resume_text(file_path: str) -> str:
     try:
         # PDF: use PyMuPDF
         if file_path.endswith('.pdf'):
-            doc = fitz.open(file_path)
-            text = '\n'.join([page.get_text('text') for page in doc])
+            with fitz.open(file_path) as doc:
+                text = '\n'.join([page.get_text('text') for page in doc])
         # DOCX: use python-docx
         elif file_path.endswith('.docx'):
             doc = docx.Document(file_path)
