@@ -51,9 +51,12 @@ This project is an agentic workflow orchestration system built with the Model Co
 
 ## Usage
 
-1. Set environment variable `OPENAI_API_KEY`
-2. Ensure `uploads` directory is writable
-3. Run `main.py` to start the API
+1. Obtain API keys for the external services:
+   - Sign up at [OpenAI](https://platform.openai.com/) and create an API key for `OPENAI_API_KEY`.
+   - Create an account at [Resend](https://resend.com/) to generate a `RESEND_API_KEY`.
+2. Copy `.env.example` to `.env` and replace the placeholder values with your own keys. The `.env` file is ignored by Git so your keys remain private.
+3. Ensure the `uploads` directory is writable.
+4. Run `main.py` to start the API.
 
 ## API Endpoints
 
@@ -85,4 +88,5 @@ Tools are available under `/mcp` for individual testing:
 ## Notes
 
 - Use `OPENAI_API_KEY` for OpenAI access
-- Customize `OPENAI_MODEL` environment variable to switch chat model
+- Customize the `OPENAI_MODEL` environment variable to switch chat model.
+  The sample `.env.example` uses `gpt-4.0` as the default model.
