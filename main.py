@@ -1,5 +1,6 @@
 # Import necessary modules from third-party libraries
 from fastapi import FastAPI, UploadFile, Form, File, HTTPException  # Web framework and request handling
+from fastapi.staticfiles import StaticFiles                        # Serving static files
 import uvicorn                        # ASGI server
 import os                             # Operating system utilities
 import shutil                         # File operations
@@ -44,6 +45,9 @@ app = FastAPI(
     description='API for processing job applications with ChatGPT summaries and OpenAI embeddings.',
     version=config['version'],               # Use version from config
 )
+
+# Serve static UI from the "static" directory
+app.mount('/', StaticFiles(directory='static', html=True), name='static')
 
 # Mount MCP server to enable agentic tool calls
 mcp = add_mcp_server(
