@@ -135,6 +135,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+# Ignore local environment variables file containing API keys
 .env
 .envrc
 .venv
