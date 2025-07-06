@@ -28,7 +28,7 @@ This project is an agentic workflow orchestration system built with the Model Co
 | Component       | Technology            | Purpose                                      |
 |-----------------|-----------------------|----------------------------------------------|
 | Framework       | FastAPI               | API server                                   |
-| MCP             | fastapi-mcp           | Agent orchestration                          |
+| MCP             | fastapi_mcp (stub)    | Agent orchestration                          |
 | Database        | SQLAlchemy, SQLite    | Persistent storage                           |
 | NLP             | openai                | ChatGPT summarization and embeddings         |
 | Email           | resend                | Notification delivery                        |
@@ -38,7 +38,6 @@ This project is an agentic workflow orchestration system built with the Model Co
 ## Dependencies
 
 - fastapi
-- fastapi-mcp
 - uvicorn
 - python-dotenv
 - openai
@@ -48,6 +47,7 @@ This project is an agentic workflow orchestration system built with the Model Co
 - python-docx
 - python-multipart
 - numpy
+- fastapi_mcp (included)
 
 ## Usage
 
@@ -97,3 +97,5 @@ Tools are available under `/mcp` for individual testing:
 - Use `OPENAI_API_KEY` for OpenAI access
 - Customize the `OPENAI_MODEL` environment variable to switch chat model.
   The sample `.env.example` uses `gpt-4.0` as the default model.
+- The `fastapi_mcp` module is bundled with the repository as a lightweight stub,
+  so there is no external `fastapi-mcp` package to install.
