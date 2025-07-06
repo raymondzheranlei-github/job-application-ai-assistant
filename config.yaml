@@ -7,7 +7,6 @@ project:
     - fastapi
     - uvicorn
     - python-dotenv
-    - fastapi-mcp
     - sqlalchemy
     - PyMuPDF
     - python-docx
