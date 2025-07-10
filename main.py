@@ -220,6 +220,24 @@ def validate_resume_document(text: str) -> bool:
     Uses ChatGPT to confirm text is formatted like a resume/CV.
     """
     try:
+        normalized = text.lower()
+        keywords = [
+            'experience',
+            'education',
+            'skills',
+            'objective',
+            'projects',
+            'certification',
+        ]
+
+        def heuristic_check() -> bool:
+            keyword_hits = sum(1 for kw in keywords if kw in normalized)
+            return len(text.split()) > 50 and keyword_hits >= 2
+
+        # If no API key is configured, fall back to a simple heuristic
+        if not os.getenv('OPENAI_API_KEY'):
+            return heuristic_check()
+
         # Build validation prompt
         prompt = f"""
 Analyze the following text and determine if it is a resume/CV document.
@@ -233,10 +251,16 @@ Text:
             messages=[{'role': 'user', 'content': prompt}],
             temperature=0.1,
         )
-        return response.choices[0].message.content.strip().lower() == 'true'
+        result = response.choices[0].message.content.strip().lower()
+        if 'true' in result:
+            return True
+        if 'false' in result:
+            return False
+        # Fallback: treat unexpected responses as false
+        return False
     except Exception as e:
         log_error(f'Error validating resume: {e}')
-        return False
+        return heuristic_check()
 
 # HTTP POST endpoint: process uploaded resume + job description
 @app.post('/applications', tags=['applications'])
