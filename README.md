@@ -61,6 +61,9 @@ This project is an agentic workflow orchestration system built with the Model Co
    source venv/bin/activate
    ```
 4. Run `./setup.sh` to install the required Python packages listed in `requirement.txt`.
+   If you see `ModuleNotFoundError` errors when running the app, rerun
+   `pip install -r requirement.txt` inside the same virtual environment to
+   ensure all dependencies are installed.
 5. Ensure the `uploads` directory is writable.
 6. Run `python main.py` to start the API server (listens on `http://127.0.0.1:8000`).
 7. Open `http://localhost:8000` in your browser to access the web UI and API.
