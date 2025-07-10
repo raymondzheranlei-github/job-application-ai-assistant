@@ -46,8 +46,6 @@ app = FastAPI(
     version=config['version'],               # Use version from config
 )
 
-# Serve static UI from the "static" directory
-app.mount('/', StaticFiles(directory='static', html=True), name='static')
 
 # Mount MCP server to enable agentic tool calls
 mcp = add_mcp_server(
@@ -312,6 +310,9 @@ async def process_job_application(
         # Catch-all error
         log_error(f'Processing error: {e}')
         raise HTTPException(status_code=500, detail='Internal server error.')
+
+# Serve static UI after routes so API endpoints take precedence
+app.mount('/', StaticFiles(directory='static', html=True), name='static')
 
 # Entry point: run with Uvicorn when invoked directly
 if __name__ == '__main__':
