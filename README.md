@@ -15,6 +15,7 @@ This project is an agentic workflow orchestration system built with the Model Co
 - **Resume Validation**   Validates documents as resumes using ChatGPT-based analysis
 - **Error Logging**   Records errors in a SQLite database for auditing
 - **Custom MCP Server**   Exposes tools as reusable endpoints under `/mcp`
+- **Responsive Web UI**   Modern Bootstrap interface for easy form submission
 
 ## Architecture
 
@@ -70,7 +71,7 @@ This project is an agentic workflow orchestration system built with the Model Co
    are installed.
 5. Ensure the `uploads` directory is writable.
 6. Run `python main.py` to start the API server (listens on `http://127.0.0.1:8000`).
-7. Open `http://localhost:8000` in your browser to access the web UI and API.
+7. Open `http://localhost:8000` in your browser to access the Bootstrap-based web UI and API.
 
 ## API Endpoints
 
