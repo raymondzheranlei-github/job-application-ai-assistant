@@ -41,7 +41,7 @@ This project is an agentic workflow orchestration system built with the Model Co
 - fastapi
 - uvicorn
 - python-dotenv
-- openai
+- openai >= 1.0
 - resend
 - sqlalchemy
 - PyMuPDF
@@ -107,3 +107,5 @@ Tools are available under `/mcp` for individual testing:
   The sample `.env.example` uses `gpt-4.0` as the default model.
 - The `fastapi_mcp` module is bundled with the repository as a lightweight stub,
   so there is no external `fastapi-mcp` package to install.
+- This project requires the `openai` Python library version 1.0 or newer.
+  If your environment has an older version installed, upgrade with `pip install -U openai`.
