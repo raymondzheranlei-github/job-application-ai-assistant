@@ -5,6 +5,7 @@ import uvicorn                        # ASGI server
 import os                             # Operating system utilities
 import shutil                         # File operations
 import re                             # Regular expressions
+import logging                        # Python logging
 import fitz                           # PyMuPDF for PDF parsing
 import docx                           # python-docx for DOCX parsing
 import openai                         # OpenAI API client
@@ -27,6 +28,11 @@ from fastapi_mcp import add_mcp_server  # MCP server integration
 
 # Load environment variables from .env
 load_dotenv()
+
+# Configure basic logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Load YAML config into a dict
 with open('config.yaml', 'r') as cfg_file:
@@ -79,6 +85,7 @@ def extract_resume_text(file_path: str) -> str:
 
         return text.strip()                # Trim whitespace
     except Exception as e:
+        logger.exception('Error extracting resume text')
         log_error(f'Error extracting resume text: {e}')  # Log to DB
         raise
 
@@ -107,6 +114,7 @@ Job Description:
         # Return the assistant's summary
         return response.choices[0].message.content.strip()
     except Exception as e:
+        logger.exception('Error summarizing job description')
         log_error(f'Error summarizing job description: {e}')
         return str(e)
 
@@ -137,6 +145,7 @@ def score_similarity(resume_text: str, job_summary: str) -> float:
         # Scale to percentage
         return round(min(100.0, max(0.0, similarity * 100)), 2)
     except Exception as e:
+        logger.exception('Error calculating similarity score')
         log_error(f'Error calculating similarity score: {e}')
         return 0.0
 
@@ -150,6 +159,7 @@ def extract_email_address(text: str) -> str:
         match = re.search(r'[\w\.-]+@[\w\.-]+', text)
         return match.group(0) if match else ''
     except Exception as e:
+        logger.exception('Error extracting email')
         log_error(f'Error extracting email: {e}')
         return ''
 
@@ -174,6 +184,7 @@ def send_email_notification(recipient_email: str, subject: str, body: str) -> bo
         })
         return True
     except Exception as e:
+        logger.exception('Error sending email notification')
         log_error(f'Error sending email notification: {e}')
         return False
 
@@ -197,6 +208,7 @@ def invite_for_interview(recipient_email: str, match_score: float) -> bool:
             return True
         return False
     except Exception as e:
+        logger.exception('Error inviting for interview')
         log_error(f'Error inviting for interview: {e}')
         return False
 
@@ -210,6 +222,7 @@ def find_existing_application(resume_text: str):
         app = find_application_by_text(resume_text)
         return (app.email, app.score) if app else (None, None)
     except Exception as e:
+        logger.exception('Error finding existing application')
         log_error(f'Error finding existing application: {e}')
         return (None, None)
 
@@ -259,6 +272,7 @@ Text:
         # Fallback: treat unexpected responses as false
         return False
     except Exception as e:
+        logger.exception('Error validating resume')
         log_error(f'Error validating resume: {e}')
         return heuristic_check()
 
@@ -274,6 +288,7 @@ async def process_job_application(
     try:
         # Validate file extension
         if not file.filename.lower().endswith(('.pdf', '.docx')):
+            logger.error('Invalid file format: %s', file.filename)
             log_error(f'Invalid file format: {file.filename}')
             raise HTTPException(status_code=400, detail='Invalid file format. Only PDF and DOCX are supported.')
 
@@ -287,12 +302,14 @@ async def process_job_application(
         # Extract and validate resume text
         resume_text = extract_resume_text(resume_path)
         if not validate_resume_document(resume_text):
+            logger.error('Uploaded document is not a resume')
             log_error('Uploaded document is not a resume')
             raise HTTPException(status_code=400, detail='Uploaded document is not a resume.')
 
         # Extract candidate email
         email = extract_email_address(resume_text)
         if not email:
+            logger.error('No email address found in resume')
             log_error('No email address found in resume')
             raise HTTPException(status_code=400, detail='No email address found in resume.')
 
@@ -332,6 +349,7 @@ async def process_job_application(
         raise
     except Exception as e:
         # Catch-all error
+        logger.exception('Processing error')
         log_error(f'Processing error: {e}')
         raise HTTPException(status_code=500, detail='Internal server error.')
 

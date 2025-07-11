@@ -3,9 +3,13 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text, F
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
+import logging
 
 # Base class for ORM models
 Base = declarative_base()
+
+# Configure module logger
+logger = logging.getLogger(__name__)
 
 class Application(Base):
     """ORM model for job applications table"""
@@ -63,8 +67,10 @@ def save_application(email: str, resume_text: str, job_description: str, score: 
         db.add(application)   # Stage insert
         db.commit()           # Persist
         return True
-    except Exception:
+    except Exception as e:
         db.rollback()         # Undo on error
+        logger.exception('Error saving application')
+        log_error(f'Error saving application: {e}')
         return False
     finally:
         db.close()            # Always close session
@@ -76,6 +82,10 @@ def find_application_by_text(resume_text: str):
     db = SessionLocal()
     try:
         return db.query(Application).filter(Application.resume_text == resume_text).first()
+    except Exception as e:
+        logger.exception('Error finding application by text')
+        log_error(f'Error finding application by text: {e}')
+        return None
     finally:
         db.close()
 
@@ -94,6 +104,10 @@ def find_exact_application_match(email: str, resume_text: str, job_description: 
               )
               .first()
         )
+    except Exception as e:
+        logger.exception('Error finding exact application match')
+        log_error(f'Error finding exact application match: {e}')
+        return None
     finally:
         db.close()
 
@@ -109,8 +123,10 @@ def update_email_status(email: str, status: bool) -> bool:
             db.commit()        # Persist change
             return True
         return False
-    except Exception:
+    except Exception as e:
         db.rollback()
+        logger.exception('Error updating email status')
+        log_error(f'Error updating email status: {e}')
         return False
     finally:
         db.close()
@@ -124,5 +140,8 @@ def log_error(error_message: str):
         log = ErrorLog(error_message=error_message)  # Create log entry
         db.add(log)
         db.commit()
+    except Exception as e:
+        db.rollback()
+        logger.exception('Error logging error message')
     finally:
         db.close()
