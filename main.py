@@ -8,7 +8,7 @@ import re                             # Regular expressions
 import logging                        # Python logging
 import fitz                           # PyMuPDF for PDF parsing
 import docx                           # python-docx for DOCX parsing
-import openai                         # OpenAI API client
+from openai import OpenAI             # OpenAI API client
 import numpy as np                    # Numerical computations
 import resend                         # Resend email service
 import yaml                           # YAML parsing
@@ -38,9 +38,10 @@ logger = logging.getLogger(__name__)
 with open('config.yaml', 'r') as cfg_file:
     config = yaml.safe_load(cfg_file)['project']  # Extract 'project' section
 
-# Set OpenAI API key and default model
-openai.api_key = os.getenv('OPENAI_API_KEY')
-model_name = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')  
+# Initialize OpenAI client and default model
+api_key = os.getenv('OPENAI_API_KEY')
+client = OpenAI(api_key=api_key)
+model_name = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
 
 # Ensure database tables exist
 init_db()
@@ -106,7 +107,7 @@ Job Description:
 {job_description_text}
 """
         # Call OpenAI ChatCompletion API
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model=model_name,
             messages=[{'role': 'user', 'content': prompt}],
             temperature=0.1,              # Low randomness for consistency
@@ -130,8 +131,8 @@ def score_similarity(resume_text: str, job_summary: str) -> float:
             return 0.0
 
         # Get embeddings from OpenAI
-        resume_embed = openai.Embedding.create(input=resume_text, model='text-embedding-ada-002')
-        job_embed = openai.Embedding.create(input=job_summary, model='text-embedding-ada-002')
+        resume_embed = client.embeddings.create(input=resume_text, model='text-embedding-ada-002')
+        job_embed = client.embeddings.create(input=job_summary, model='text-embedding-ada-002')
 
         # Convert to numpy arrays
         resume_vector = np.array(resume_embed.data[0].embedding)
@@ -259,7 +260,7 @@ Text:
 {text}
 """
         # Call LLM
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model=model_name,
             messages=[{'role': 'user', 'content': prompt}],
             temperature=0.1,
