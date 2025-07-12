@@ -189,11 +189,13 @@ def send_email_notification(recipient_email: str, subject: str, body: str) -> bo
         log_error(f'Error sending email notification: {e}')
         return False
 
-# Define MCP tool: invite candidate if score >= threshold
+# Define MCP tool: invite candidate when the match score is above the
+# passing threshold.
 @mcp.tool()
 def invite_for_interview(recipient_email: str, match_score: float) -> bool:
     """
-    Sends an interview invite email when candidate meets threshold.
+    Sends an interview invite email when the candidate's score exceeds the
+    required threshold.
     """
     try:
         # Static booking link
@@ -331,7 +333,7 @@ async def process_job_application(
         # Optionally invite candidate
         email_sent = False
         message = 'Candidate did not meet the score threshold.'
-        if match_score >= 70:
+        if match_score > 80:
             message = 'Candidate passed eligibility.'
             email_sent = invite_for_interview(email, match_score)
             message += ' Invitation sent.' if email_sent else ' Failed to send invitation.'
